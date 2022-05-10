@@ -30,6 +30,7 @@ exposureR1=[]
 onset1=[]
 incubation1=[]
 
+
 for i in data1["ExposureL"]:
     exposureL1.append(i)
 for i in data1["ExposureR"]:
@@ -52,10 +53,48 @@ for i in range(0,len(incubation1)):
         if (str(incubation1[i])[1:2]==" "):
             incube1.append(str(incubation1[i])[0:1])
         else:    
-            incube2.append(str(incubation1[i])[0:2])
+            incube1.append(str(incubation1[i])[0:2])
 for i in range(0,len(incube1)):
     incube1[i]=int(incube1[i])
-print(incube1)
+incube1_index=[]
+incube1_prob=[]
+incube1_index,incube1_prob=create_PMF(incube1)
+Results=pd.DataFrame({"Incubation Period":incube1_index,"No of observation":incube1_prob})
+print(Results)
+plt.hist(incube1,bins=len(incube1_index))
+#plt.show()
+mean_variance(incube1_prob,incube1_index)
+#for all affected people
+exposureL1=[]
+exposureR1=[]
+onset1=[]
+incubation1=[]
+
+for i in data["ExposureL"]:
+    exposureL1.append(i)
+for i in data["ExposureR"]:
+    exposureR1.append(i)
+for i in data["Onset"]:
+    onset1.append(i)
+for i in range(0,len(exposureL1)):
+    if str(exposureL1[i]) == "NaT":
+        exposureL1[i] = pd.Timestamp(datetime.date(2019, 12, 1))
+for i in range(0,len(onset1)):
+    if str(onset1[i]) == "NaT":
+        onset1[i] = exposureR1[i] + datetime.timedelta(days=1)
+for i in range(0, len(exposureL1)):
+    for j in range(0, len(onset1)):
+        if i == j:
+            incubation1.append((onset1[i] - exposureL1[i]))
+incube1=[]
+for i in range(0,len(incubation1)):
+    if (str(incubation1[i])[0:2]!="Na"):
+        if (str(incubation1[i])[1:2]==" "):
+            incube1.append(str(incubation1[i])[0:1])
+        else:    
+            incube1.append(str(incubation1[i])[0:2])
+for i in range(0,len(incube1)):
+    incube1[i]=int(incube1[i])
 incube1_index=[]
 incube1_prob=[]
 incube1_index,incube1_prob=create_PMF(incube1)
